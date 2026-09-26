@@ -46,7 +46,7 @@ export function CardsPanel({ rc, analysis, onFiles, busy, accept = CARD_FILE_ACC
             {ws.reports.map((r) => (
               <div key={r.id} className={`report ${r.issues.some((i) => i.severity === 'error') ? 'has-errors' : ''}`}>
                 <div className="report-head">
-                  <strong>{r.file}</strong>: added {r.added} card{r.added === 1 ? '' : 's'}
+                  <strong>{r.file}</strong>: {r.summary ?? `added ${r.added} card${r.added === 1 ? '' : 's'}`}
                   {r.issues.length > 0 && `, ${r.issues.length} problem${r.issues.length === 1 ? '' : 's'}`}
                   <button type="button" className="btn small ghost" onClick={() => dispatch({ type: 'dismissReport', id: r.id })} aria-label={`Dismiss report for ${r.file}`}>
                     Dismiss
