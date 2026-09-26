@@ -38,7 +38,7 @@ export function CardsPanel({ rc, analysis, onFiles, busy, accept = CARD_FILE_ACC
             onFiles={onFiles}
             busy={busy}
             label="Choose files…"
-            hint={hint ?? <>.txt, .csv, .xlsx or .json. Imported cards are added to the deck.</>}
+            hint={hint ?? <>.txt, .csv, .xlsx or .json. Imported cards are added to the deck. Drop a .deck.json to reopen a saved deck.</>}
           />
           <SampleDownloads template={rc.template} />
 

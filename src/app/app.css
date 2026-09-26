@@ -165,3 +165,11 @@ button.link { background: none; border: 0; padding: 0; font: inherit; color: inh
 
 .app-footer { margin-top: 32px; padding-top: 12px; border-top: 1px solid var(--border); }
 .app-footer p { margin: 4px 0; }
+
+.plan-list { margin: 0 0 12px; padding-left: 20px; }
+.notice { padding: 8px 12px; border-radius: 6px; margin: 10px 0; }
+.notice.warn { background: var(--warn-bg); }
+.notice.error { background: var(--error-bg); }
+.sheet-wrap { overflow-x: auto; }
+.sheet-canvas { display: block; background: repeating-conic-gradient(var(--surface-2) 0 25%, var(--surface) 0 50%) 0 0 / 16px 16px; border: 1px solid var(--border); }
+.sheet-picker { margin-bottom: 6px; }
