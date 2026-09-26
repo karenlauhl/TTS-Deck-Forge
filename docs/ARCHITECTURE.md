@@ -1,6 +1,6 @@
 # TTS Deck Forge: architecture and data model (proposal)
 
-Status: **approved.** Section 11's decisions were all accepted (pick is inferred from blanks).
+Status: **implemented** (stages 1–9). Section 11 decisions were all accepted; pick is inferred from blanks.
 
 ---
 
