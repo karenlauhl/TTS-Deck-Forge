@@ -1,5 +1,6 @@
 import type { AssetId, StyleSettings } from '../../core/model/deck';
 import type { StyleOptionDef } from '../../core/template/types';
+import { backOption, colorOptions, fontOption, footerOptions } from '../shared/styleOptions';
 import type { FibKind } from './model';
 
 export interface FibStyle {
@@ -37,4 +38,11 @@ export function resolveFibStyle(style: StyleSettings<FibStyle>): FibStyle {
   };
 }
 
-export const fibStyleOptions: StyleOptionDef[] = [];
+export const fibStyleOptions: StyleOptionDef[] = [
+  ...colorOptions('colors.black', 'Black card'),
+  ...colorOptions('colors.white', 'White card'),
+  fontOption(),
+  ...footerOptions(),
+  backOption('backs.black', 'Black card back'),
+  backOption('backs.white', 'White card back'),
+];
