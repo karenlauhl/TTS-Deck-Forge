@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { toCardRecords } from '../import/cards';
-import { fibDataTemplate as T } from '../../templates/fill-in-the-blank/testTemplate';
+import { template as T } from '../../templates/fill-in-the-blank';
 import { validateCards } from './validateCards';
 
 describe('validateCards', () => {

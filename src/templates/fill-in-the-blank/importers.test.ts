@@ -4,7 +4,7 @@ import { importFile, type ImportOutcome } from '../../core/import/importFile';
 import { buildSampleFile } from '../../core/import/samples';
 import type { ParseResult } from '../../core/template/types';
 import type { FibCard } from './model';
-import { fibDataTemplate as T } from './testTemplate';
+import { template as T } from './index';
 
 const enc = (s: string) => new TextEncoder().encode(s);
 const cardsOf = (o: ImportOutcome) => {
