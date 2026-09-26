@@ -173,3 +173,24 @@ button.link { background: none; border: 0; padding: 0; font: inherit; color: inh
 .sheet-wrap { overflow-x: auto; }
 .sheet-canvas { display: block; background: repeating-conic-gradient(var(--surface-2) 0 25%, var(--surface) 0 50%) 0 0 / 16px 16px; border: 1px solid var(--border); }
 .sheet-picker { margin-bottom: 6px; }
+
+.steps { margin: 0 0 8px; padding-left: 22px; }
+.steps li { margin: 4px 0; }
+.stack { display: flex; flex-direction: column; gap: 4px; }
+.bulk { margin-bottom: 14px; }
+.bulk summary { cursor: pointer; font-weight: 600; margin-bottom: 8px; }
+.bulk .btn { margin-top: 6px; }
+.url-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 14px; }
+.url-row { display: grid; grid-template-columns: minmax(220px, 320px) 1fr; gap: 2px 12px; align-items: center; }
+.url-row label { display: flex; flex-direction: column; font-weight: 600; font-size: 0.92rem; }
+.url-row .file-name { font-weight: 400; font-family: ui-monospace, monospace; word-break: break-all; }
+.url-row input { width: 100%; }
+.url-msg { grid-column: 2; min-height: 1em; }
+.url-row.ok .url-msg { color: var(--muted); }
+.url-row.warn .url-msg { color: var(--warn); }
+.url-row.error .url-msg { color: var(--danger); }
+.url-row.error input { border-color: var(--danger); }
+.url-row.warn input { border-color: var(--warn); }
+@media (max-width: 700px) { .url-row { grid-template-columns: 1fr; } .url-msg { grid-column: 1; } }
+.local-mode { margin: 6px 0; }
+code { font-family: ui-monospace, monospace; font-size: 0.9em; background: var(--surface-2); padding: 1px 4px; border-radius: 4px; }

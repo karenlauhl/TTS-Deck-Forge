@@ -32,6 +32,8 @@ export interface Deck<TData = unknown, TStyle = unknown> {
   templateId: string;
   cards: CardRecord<TData>[];
   style: StyleSettings<TStyle>;
+  /** Hosted image URLs from the Build TTS Object step, keyed by exported file name. */
+  hostedUrls?: Record<string, string>;
 }
 
 /** An uploaded binary: font, logo, card back or card image. */
