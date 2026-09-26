@@ -22,12 +22,12 @@ export interface CardRecord<TData = unknown> {
  * Style is one bag of values. Options marked `customOnly` are ignored while
  * `mode` is 'default', so toggling back to default never loses custom work.
  */
-export interface StyleSettings<TValues = Record<string, unknown>> {
+export interface StyleSettings<TValues = unknown> {
   mode: 'default' | 'custom';
   values: TValues;
 }
 
-export interface Deck<TData = unknown, TStyle = Record<string, unknown>> {
+export interface Deck<TData = unknown, TStyle = unknown> {
   name: string;
   templateId: string;
   cards: CardRecord<TData>[];

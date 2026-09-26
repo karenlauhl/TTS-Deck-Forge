@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { toCardRecords } from '../core/import/cards';
-import { error } from '../core/model/issues';
 import { randomId } from '../core/model/ids';
 import { listTemplates } from '../templates';
 import { Tabs, type TabDef } from './components/Tabs';
@@ -8,9 +7,11 @@ import { useAnalysis, useRenderContext } from './hooks/useRender';
 import { importCardFiles } from './importFiles';
 import { CardsPanel } from './panels/CardsPanel';
 import { PreviewPanel } from './panels/PreviewPanel';
+import { ExportPanel } from './panels/ExportPanel';
+import { parseDeckFile } from '../core/deckfile/deckfile';
 import { useWorkspace } from './state/WorkspaceContext';
 
-type TabId = 'cards' | 'preview';
+type TabId = 'cards' | 'preview' | 'export';
 
 export function App() {
   const { ws, dispatch, ready, autosave } = useWorkspace();
@@ -24,12 +25,19 @@ export function App() {
   const onFiles = async (files: File[]) => {
     setBusy(true);
     try {
-      await importCardFiles(files, template, dispatch, (file) =>
+      await importCardFiles(files, template, dispatch, (file, value) => {
+        const parsed = parseDeckFile(value, file.name);
+        if (!parsed.deck) {
+          dispatch({ type: 'addReport', report: { id: randomId('r'), file: file.name, added: 0, issues: parsed.issues } });
+          return;
+        }
+        if (ws.deck.cards.length > 0 && !confirm(`Replace the current deck with "${parsed.deck.name}" from ${file.name}?`)) return;
+        dispatch({ type: 'load', deck: parsed.deck, assets: parsed.assets });
         dispatch({
           type: 'addReport',
-          report: { id: randomId('r'), file: file.name, added: 0, issues: [error('unsupported-format', 'deck files are not supported yet', { origin: { type: 'file', file: file.name } })] },
-        }),
-      );
+          report: { id: randomId('r'), file: file.name, added: parsed.deck.cards.length, issues: parsed.issues },
+        });
+      });
     } finally {
       setBusy(false);
     }
@@ -51,6 +59,7 @@ export function App() {
   const tabs: TabDef<TabId>[] = [
     { id: 'cards', label: 'Cards', badge: ws.deck.cards.length || '' },
     { id: 'preview', label: 'Preview' },
+    { id: 'export', label: 'Export sheets' },
   ];
 
   return (
@@ -107,6 +116,7 @@ export function App() {
           <div role="tabpanel" id={`panel-${tab}`} aria-labelledby={`tab-${tab}`} tabIndex={0} className="tabpanel">
             {tab === 'cards' && <CardsPanel rc={rc} analysis={analysis} onFiles={onFiles} busy={busy} />}
             {tab === 'preview' && <PreviewPanel rc={rc} analysis={analysis} />}
+            {tab === 'export' && <ExportPanel rc={rc} analysis={analysis} />}
           </div>
         )}
       </main>
