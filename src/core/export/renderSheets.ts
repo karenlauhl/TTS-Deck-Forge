@@ -80,4 +80,18 @@ export async function renderCardImage(template: AnyTemplate, deck: Deck, env: Re
   return toBlob(canvas, 'png');
 }
 
+/** Square PNG thumbnail (TTS shows it in the Saved Objects list). */
+export async function renderThumbnail(template: AnyTemplate, deck: Deck, env: RenderEnv, card: Deck['cards'][number] | undefined, size = 256): Promise<Blob> {
+  const canvas = makeCanvas(size, size);
+  const ctx = canvas.getContext('2d') as CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
+  const cs = template.cardSize(deck.style);
+  const h = size * 0.92;
+  const w = (h * cs.width) / cs.height;
+  const x = (size - w) / 2;
+  const y = (size - h) / 2;
+  if (card) drawCardFace(ctx, template, card, deck.style, env, x, y, w);
+  else drawCardBack(ctx, template, template.kinds[0].id, deck.style, env, x, y, w);
+  return toBlob(canvas, 'png');
+}
+
 export const nextFrame = () => new Promise<void>((r) => setTimeout(r, 0));

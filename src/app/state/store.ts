@@ -25,6 +25,7 @@ export type Action =
   | { type: 'deleteCards'; ids: CardId[] }
   | { type: 'clearCards' }
   | { type: 'setStyle'; style: StyleSettings }
+  | { type: 'setHostedUrl'; fileName: string; url: string }
   | { type: 'addAssets'; assets: Asset[] }
   | { type: 'addReport'; report: ImportReport }
   | { type: 'dismissReport'; id: string }
@@ -85,6 +86,8 @@ export function reducer(ws: Workspace, a: Action): Workspace {
       return { ...mapCards(ws, () => []), reports: [] };
     case 'setStyle':
       return { ...ws, deck: { ...ws.deck, style: a.style } };
+    case 'setHostedUrl':
+      return { ...ws, deck: { ...ws.deck, hostedUrls: { ...ws.deck.hostedUrls, [a.fileName]: a.url } } };
     case 'addAssets': {
       const assets = new Map(ws.assets);
       for (const x of a.assets) assets.set(x.id, x);

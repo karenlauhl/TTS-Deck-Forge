@@ -18,6 +18,7 @@ const deck: Deck = {
     { id: 'c1', kind: 'black', count: 1, data: { text: 'Why _____?', pick: 1 }, origin: { type: 'manual' } },
     { id: 'c2', kind: 'white', count: 3, data: { text: 'Bees.' }, origin: { type: 'manual' } },
   ],
+  hostedUrls: { 'office-party-black-sheet-1.png': 'https://x.test/1.png' },
   style: {
     mode: 'custom',
     values: { ...template.defaultStyle, colors: { black: { background: '#112233', text: '#ffeeaa' }, white: { background: '#fff', text: '#000' } }, footer: { show: true, showDeckName: true, logo: 'a_logo' } },
@@ -43,6 +44,7 @@ describe('deck file', () => {
     expect(parsed.issues).toEqual([]);
     expect(parsed.deck!.name).toBe('Office Party');
     expect(parsed.deck!.style).toEqual(deck.style);
+    expect(parsed.deck!.hostedUrls).toEqual(deck.hostedUrls);
     expect(parsed.deck!.cards.map((c) => [c.id, c.kind, c.count, c.data])).toEqual(deck.cards.map((c) => [c.id, c.kind, c.count, c.data]));
     expect(parsed.assets).toHaveLength(1);
     expect(new Uint8Array(await parsed.assets[0].blob.arrayBuffer())).toEqual(new Uint8Array(await logo.blob.arrayBuffer()));

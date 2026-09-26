@@ -8,10 +8,11 @@ import { importCardFiles } from './importFiles';
 import { CardsPanel } from './panels/CardsPanel';
 import { PreviewPanel } from './panels/PreviewPanel';
 import { ExportPanel } from './panels/ExportPanel';
+import { TtsPanel } from './panels/TtsPanel';
 import { parseDeckFile } from '../core/deckfile/deckfile';
 import { useWorkspace } from './state/WorkspaceContext';
 
-type TabId = 'cards' | 'preview' | 'export';
+type TabId = 'cards' | 'preview' | 'export' | 'tts';
 
 export function App() {
   const { ws, dispatch, ready, autosave } = useWorkspace();
@@ -60,6 +61,7 @@ export function App() {
     { id: 'cards', label: 'Cards', badge: ws.deck.cards.length || '' },
     { id: 'preview', label: 'Preview' },
     { id: 'export', label: 'Export sheets' },
+    { id: 'tts', label: 'Build TTS object' },
   ];
 
   return (
@@ -117,6 +119,7 @@ export function App() {
             {tab === 'cards' && <CardsPanel rc={rc} analysis={analysis} onFiles={onFiles} busy={busy} />}
             {tab === 'preview' && <PreviewPanel rc={rc} analysis={analysis} />}
             {tab === 'export' && <ExportPanel rc={rc} analysis={analysis} />}
+            {tab === 'tts' && <TtsPanel rc={rc} />}
           </div>
         )}
       </main>

@@ -18,6 +18,7 @@ export interface DeckFile {
   style: { mode: 'default' | 'custom'; values: unknown };
   cards: { id: string; kind: string; count: number; data: unknown }[];
   assets: Record<AssetId, { name: string; mime: string; role: 'font' | 'image'; data: string }>;
+  hostedUrls?: Record<string, string>;
 }
 
 /** Every string anywhere in a value (used to find referenced asset ids). */
@@ -48,6 +49,7 @@ export async function serializeDeck(deck: Deck, assets: AssetMap, generator = 'T
     style: { mode: deck.style.mode, values: deck.style.values },
     cards: deck.cards.map((c) => ({ id: c.id, kind: c.kind, count: c.count, data: c.data })),
     assets: out,
+    ...(deck.hostedUrls && Object.keys(deck.hostedUrls).length ? { hostedUrls: deck.hostedUrls } : {}),
   };
 }
 
@@ -121,12 +123,16 @@ export function parseDeckFile(value: unknown, file: string): ParsedDeckFile {
     }
   }
 
+  const hostedUrls: Record<string, string> = {};
+  if (isObj(value.hostedUrls)) for (const [k, v] of Object.entries(value.hostedUrls)) if (typeof v === 'string') hostedUrls[k] = v;
+
   return {
     deck: {
       name: typeof value.name === 'string' ? value.name : 'Deck',
       templateId: template.id,
       cards,
       style: { mode: style.mode === 'custom' ? 'custom' : 'default', values },
+      ...(Object.keys(hostedUrls).length ? { hostedUrls } : {}),
     },
     assets,
     issues,
