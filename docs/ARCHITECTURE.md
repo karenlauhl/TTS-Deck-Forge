@@ -1,7 +1,6 @@
 # TTS Deck Forge: architecture and data model (proposal)
 
-Status: **proposal for stage 1 (`feat/data-model`), awaiting approval.**
-Nothing in this doc is implemented yet.
+Status: **approved.** Section 11's decisions were all accepted (pick is inferred from blanks).
 
 ---
 
@@ -85,6 +84,7 @@ export interface CardRecord<TData = unknown> {
   id: CardId;
   kind: string;                 // one of template.kinds[].id — each kind becomes its own TTS deck
   data: TData;                  // shape owned by the template
+  count: number;                // copies in the exported deck (>= 1), e.g. 3× Fireball
   origin: CardOrigin;           // for error messages ("answers.csv row 14")
 }
 
