@@ -9,10 +9,11 @@ import { CardsPanel } from './panels/CardsPanel';
 import { PreviewPanel } from './panels/PreviewPanel';
 import { ExportPanel } from './panels/ExportPanel';
 import { TtsPanel } from './panels/TtsPanel';
+import { StylePanel } from './panels/StylePanel';
 import { parseDeckFile } from '../core/deckfile/deckfile';
 import { useWorkspace } from './state/WorkspaceContext';
 
-type TabId = 'cards' | 'preview' | 'export' | 'tts';
+type TabId = 'cards' | 'style' | 'preview' | 'export' | 'tts';
 
 export function App() {
   const { ws, dispatch, ready, autosave } = useWorkspace();
@@ -59,6 +60,7 @@ export function App() {
 
   const tabs: TabDef<TabId>[] = [
     { id: 'cards', label: 'Cards', badge: ws.deck.cards.length || '' },
+    { id: 'style', label: 'Style' },
     { id: 'preview', label: 'Preview' },
     { id: 'export', label: 'Export sheets' },
     { id: 'tts', label: 'Build TTS object' },
@@ -117,6 +119,7 @@ export function App() {
         ) : (
           <div role="tabpanel" id={`panel-${tab}`} aria-labelledby={`tab-${tab}`} tabIndex={0} className="tabpanel">
             {tab === 'cards' && <CardsPanel rc={rc} analysis={analysis} onFiles={onFiles} busy={busy} />}
+            {tab === 'style' && <StylePanel rc={rc} />}
             {tab === 'preview' && <PreviewPanel rc={rc} analysis={analysis} />}
             {tab === 'export' && <ExportPanel rc={rc} analysis={analysis} />}
             {tab === 'tts' && <TtsPanel rc={rc} />}

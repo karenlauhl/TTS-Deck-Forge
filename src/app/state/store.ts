@@ -1,6 +1,7 @@
 import type { Asset, AssetId, CardId, CardRecord, Deck, StyleSettings } from '../../core/model/deck';
 import type { Issue } from '../../core/model/issues';
 import { getTemplate, listTemplates } from '../../templates';
+import { setPath } from '../../core/template/paths';
 
 export interface ImportReport {
   id: string;
@@ -25,6 +26,9 @@ export type Action =
   | { type: 'deleteCards'; ids: CardId[] }
   | { type: 'clearCards' }
   | { type: 'setStyle'; style: StyleSettings }
+  /** Set one style value by dot path, against the latest state (safe for async uploads). */
+  | { type: 'setStyleValue'; key: string; value: unknown }
+  | { type: 'setStyleMode'; mode: StyleSettings['mode'] }
   | { type: 'setHostedUrl'; fileName: string; url: string }
   | { type: 'addAssets'; assets: Asset[] }
   | { type: 'addReport'; report: ImportReport }
@@ -86,6 +90,10 @@ export function reducer(ws: Workspace, a: Action): Workspace {
       return { ...mapCards(ws, () => []), reports: [] };
     case 'setStyle':
       return { ...ws, deck: { ...ws.deck, style: a.style } };
+    case 'setStyleValue':
+      return { ...ws, deck: { ...ws.deck, style: { ...ws.deck.style, values: setPath(ws.deck.style.values ?? {}, a.key, a.value) } } };
+    case 'setStyleMode':
+      return { ...ws, deck: { ...ws.deck, style: { ...ws.deck.style, mode: a.mode } } };
     case 'setHostedUrl':
       return { ...ws, deck: { ...ws.deck, hostedUrls: { ...ws.deck.hostedUrls, [a.fileName]: a.url } } };
     case 'addAssets': {
