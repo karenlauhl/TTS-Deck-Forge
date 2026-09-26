@@ -2,12 +2,15 @@ import type { Asset, AssetId, CardId, CardRecord, Deck, StyleSettings } from '..
 import type { Issue } from '../../core/model/issues';
 import { getTemplate, listTemplates } from '../../templates';
 import { setPath } from '../../core/template/paths';
+import { resolveImageRefs } from '../../core/model/imageRef';
 
 export interface ImportReport {
   id: string;
   file: string;
   added: number;
   issues: Issue[];
+  /** Overrides the default "added N cards" summary. */
+  summary?: string;
 }
 
 export interface Workspace {
@@ -51,7 +54,15 @@ const mapCards = (ws: Workspace, fn: (cards: CardRecord[]) => CardRecord[]): Wor
   deck: { ...ws.deck, cards: fn(ws.deck.cards) },
 });
 
+/** Link image filenames in cards to uploaded images whenever either changes. */
 export function reducer(ws: Workspace, a: Action): Workspace {
+  const next = step(ws, a);
+  if (next.deck.cards === ws.deck.cards && next.assets === ws.assets) return next;
+  const cards = resolveImageRefs(next.deck.cards, next.assets);
+  return cards === next.deck.cards ? next : { ...next, deck: { ...next.deck, cards } };
+}
+
+function step(ws: Workspace, a: Action): Workspace {
   switch (a.type) {
     case 'load':
       return { deck: a.deck, assets: new Map(a.assets.map((x) => [x.id, x])), reports: [] };

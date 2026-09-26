@@ -1,6 +1,7 @@
 import type { CardRecord, StyleSettings } from '../../core/model/deck';
 import { drawImageFit, drawLines } from '../../core/render/draw';
 import { fontString } from '../../core/render/measure';
+import { drawFooter } from '../shared/draw';
 import { fitText, tokenize, type FitResult } from '../../core/text/fit';
 import type { CardLayoutBase, Ctx2D, LayoutEnv, RenderEnv, Size } from '../../core/template/types';
 import type { FibCard, FibKind } from './model';
@@ -57,29 +58,20 @@ export function drawFibFace(ctx: Ctx2D, card: CardRecord<FibCard>, style: StyleS
     measure: env.measure,
   });
 
-  if (s.footer.show) drawFooter(ctx, s, colors.text, env);
+  if (s.footer.show) {
+    drawFooter(ctx, env, {
+      x: PAD,
+      baseline: FOOTER_BASELINE,
+      maxWidth: CARD.width - PAD * 2 - 220, // leave room for the PICK badge
+      color: colors.text,
+      family,
+      logo: s.footer.logo,
+      deckName: s.footer.showDeckName,
+    });
+  }
 
   const pick = card.kind === 'black' ? (card.data.pick ?? 1) : 1;
   if (pick > 1) drawPick(ctx, pick, colors, family);
-}
-
-function drawFooter(ctx: Ctx2D, s: FibStyle, color: string, env: RenderEnv) {
-  let x = PAD;
-  const logo = env.image(s.footer.logo);
-  const LOGO = 48;
-  if (logo) {
-    drawImageFit(ctx, logo, x, FOOTER_BASELINE - LOGO + 10, LOGO, LOGO, 'contain');
-    x += LOGO + 14;
-  }
-  if (s.footer.showDeckName && env.deckName) {
-    const font = { family: env.fontFamily(s.font), weight: 700, sizePx: 24 };
-    ctx.font = fontString(font);
-    ctx.fillStyle = color;
-    ctx.textBaseline = 'alphabetic';
-    ctx.textAlign = 'left';
-    // Leave room for the PICK badge on the right.
-    ctx.fillText(env.deckName, x, FOOTER_BASELINE - 4, CARD.width - x - 260);
-  }
 }
 
 function drawPick(ctx: Ctx2D, pick: number, colors: { background: string; text: string }, family: string) {

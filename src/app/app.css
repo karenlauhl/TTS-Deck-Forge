@@ -211,3 +211,7 @@ legend { font-weight: 700; padding: 0 4px; }
 .asset-label { font-weight: 600; font-size: 0.92rem; }
 .asset-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .asset-thumb { width: 40px; height: 40px; object-fit: contain; border: 1px solid var(--border); border-radius: 4px; background: var(--surface-2); }
+
+.image-field { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-width: 240px; }
+.image-field input[type='text'] { flex: 1; min-width: 120px; }
+.error-text { color: var(--danger); }

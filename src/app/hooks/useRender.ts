@@ -6,6 +6,8 @@ import { ImageCache } from '../../core/render/images';
 import { createCanvasMeasurer } from '../../core/render/measure';
 import type { AnyTemplate, CardLayoutBase, RenderEnv } from '../../core/template/types';
 import { validateCards } from '../../core/validate/validateCards';
+import { isImageRef } from '../../core/model/imageRef';
+import { warning } from '../../core/model/issues';
 import { getTemplate } from '../../templates';
 import { useWorkspace } from '../state/WorkspaceContext';
 
@@ -94,6 +96,22 @@ export function useAnalysis(rc: RenderContext): Analysis {
     const layouts = new Map<CardId, CardLayoutBase>();
     for (const c of cards) layouts.set(c.id, rc.template.layout(c, style, rc.env));
     const issues = validateCards(rc.template, cards, rc.fontsReady ? { fits: (c) => layouts.get(c.id)?.fits ?? true } : {});
+    // Remote images whose host blocks CORS can't go into exported sheets.
+    for (const c of cards) {
+      for (const v of Object.values(c.data as Record<string, unknown>)) {
+        if (isImageRef(v) && v.type === 'url') {
+          const st = imageCache.remoteStatus(v.url);
+          if (st === 'blocked' || st === 'failed') {
+            issues.push(
+              warning('image-blocked', st === 'blocked' ? "this image's website blocks it from being used in exports; download it and upload the file instead" : "the image URL couldn't be loaded", {
+                origin: c.origin,
+                cardId: c.id,
+              }),
+            );
+          }
+        }
+      }
+    }
     const issuesByCard = new Map<CardId, Issue[]>();
     for (const i of issues) if (i.cardId) issuesByCard.set(i.cardId, [...(issuesByCard.get(i.cardId) ?? []), i]);
     return { layouts, issues, issuesByCard };

@@ -4,7 +4,10 @@ import { randomId } from '../core/model/ids';
 import { listTemplates } from '../templates';
 import { Tabs, type TabDef } from './components/Tabs';
 import { useAnalysis, useRenderContext } from './hooks/useRender';
-import { importCardFiles } from './importFiles';
+import { CARD_FILE_ACCEPT, importCardFiles } from './importFiles';
+import { fileToAsset, IMAGE_ACCEPT } from './assets';
+import type { Asset } from '../core/model/deck';
+import { error as issueError } from '../core/model/issues';
 import { CardsPanel } from './panels/CardsPanel';
 import { PreviewPanel } from './panels/PreviewPanel';
 import { ExportPanel } from './panels/ExportPanel';
@@ -27,7 +30,31 @@ export function App() {
   const onFiles = async (files: File[]) => {
     setBusy(true);
     try {
-      await importCardFiles(files, template, dispatch, (file, value) => {
+      const acceptsImages = template.fields.some((f) => f.type === 'image');
+      const images = acceptsImages ? files.filter((f) => f.type.startsWith('image/')) : [];
+      if (images.length) {
+        const assets: Asset[] = [];
+        const issues = [];
+        for (const f of images) {
+          try {
+            assets.push(await fileToAsset(f, 'image'));
+          } catch (e) {
+            issues.push(issueError('parse-error', (e as Error).message, { origin: { type: 'file', file: f.name } }));
+          }
+        }
+        dispatch({ type: 'addAssets', assets });
+        dispatch({
+          type: 'addReport',
+          report: {
+            id: randomId('r'),
+            file: `${images.length} image${images.length > 1 ? 's' : ''}`,
+            added: 0,
+            issues,
+            summary: `uploaded ${assets.length}; cards that name these files now use them`,
+          },
+        });
+      }
+      await importCardFiles(files.filter((f) => !images.includes(f)), template, dispatch, (file, value) => {
         const parsed = parseDeckFile(value, file.name);
         if (!parsed.deck) {
           dispatch({ type: 'addReport', report: { id: randomId('r'), file: file.name, added: 0, issues: parsed.issues } });
@@ -118,7 +145,20 @@ export function App() {
           <p className="muted">Loading your saved deck…</p>
         ) : (
           <div role="tabpanel" id={`panel-${tab}`} aria-labelledby={`tab-${tab}`} tabIndex={0} className="tabpanel">
-            {tab === 'cards' && <CardsPanel rc={rc} analysis={analysis} onFiles={onFiles} busy={busy} />}
+            {tab === 'cards' && (
+              <CardsPanel
+                rc={rc}
+                analysis={analysis}
+                onFiles={onFiles}
+                busy={busy}
+                {...(template.fields.some((f) => f.type === 'image')
+                  ? {
+                      accept: `${CARD_FILE_ACCEPT},${IMAGE_ACCEPT}`,
+                      hint: <>.txt, .csv, .xlsx or .json cards, plus the images they name (matched by file name). Drop a .deck.json to reopen a saved deck.</>,
+                    }
+                  : {})}
+              />
+            )}
             {tab === 'style' && <StylePanel rc={rc} />}
             {tab === 'preview' && <PreviewPanel rc={rc} analysis={analysis} />}
             {tab === 'export' && <ExportPanel rc={rc} analysis={analysis} />}

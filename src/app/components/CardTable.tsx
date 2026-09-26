@@ -5,6 +5,7 @@ import type { FieldDef } from '../../core/template/types';
 import type { Analysis, RenderContext } from '../hooks/useRender';
 import { useWorkspace } from '../state/WorkspaceContext';
 import { newCardId } from '../../core/model/ids';
+import { ImageField } from './ImageField';
 
 const PAGE = 150;
 
@@ -162,8 +163,8 @@ export function CardTable({ rc, analysis, selectedId, onSelect, renderField }: P
                     {allFields.map((f) => (
                       <td key={f.key} className={`field-${f.type}`}>
                         {applicable.has(f.key) ? (
-                          renderField && f.type === 'image' ? (
-                            renderField(f, card, n)
+                          f.type === 'image' ? (
+                            (renderField?.(f, card, n) ?? <ImageField card={card} fieldKey={f.key} n={n} />)
                           ) : (
                             <FieldInput field={f} card={card} n={n} />
                           )
